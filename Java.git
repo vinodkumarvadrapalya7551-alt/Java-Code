@@ -1,0 +1,7 @@
+cd OOPS_Programming_I
+git init
+git remote add origin https://github.com/vinodkumarvadrapalya7551-alt/Java-Code.git
+git add .
+git commit -m "Add OOPS Programming I solutions"
+git branch -M main
+git push -u origin main
