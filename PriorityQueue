@@ -1,0 +1,92 @@
+import java.io.*;
+import java.util.*;
+
+class Main {
+    static class Edge {
+        int target, weight;
+        Edge(int target, int weight) {
+            this.target = target;
+            this.weight = weight;
+        }
+    }
+
+    static class Node implements Comparable<Node> {
+        int id, dist;
+        Node(int id, int dist) {
+            this.id = id;
+            this.dist = dist;
+        }
+        @Override
+        public int compareTo(Node other) {
+            return Integer.compare(this.dist, other.dist);
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+
+        if (!br.ready()) return;
+        st = new StringTokenizer(br.readLine());
+        int n = Integer.parseInt(st.nextToken()); // Number of vertices
+        int m = Integer.parseInt(st.nextToken()); // Number of edges
+
+        List<List<Edge>> graph = new ArrayList<>();
+        for (int i = 0; i <= n; i++) {
+            graph.add(new ArrayList<>());
+        }
+
+        for (int i = 0; i < m; i++) {
+            st = new StringTokenizer(br.readLine());
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
+            graph.get(u).add(new Edge(v, w));
+            graph.get(v).add(new Edge(u, w)); // Undirected graph
+        }
+
+        int start = 1;
+        int end = n;
+
+        int[] dist = new int[n + 1];
+        int[] parent = new int[n + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        Arrays.fill(parent, -1);
+
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        dist[start] = 0;
+        pq.add(new Node(start, 0));
+
+        while (!pq.isEmpty()) {
+            Node curr = pq.poll();
+
+            if (curr.dist > dist[curr.id]) continue;
+            if (curr.id == end) break;
+
+            for (Edge edge : graph.get(curr.id)) {
+                if (dist[curr.id] + edge.weight < dist[edge.target]) {
+                    dist[edge.target] = dist[curr.id] + edge.weight;
+                    parent[edge.target] = curr.id;
+                    pq.add(new Node(edge.target, dist[edge.target]));
+                }
+            }
+        }
+
+        if (dist[end] == Integer.MAX_VALUE) {
+            System.out.println("-1");
+        } else {
+            List<Integer> path = new ArrayList<>();
+            for (int v = end; v != -1; v = parent[v]) {
+                path.add(v);
+            }
+            Collections.reverse(path);
+            
+            System.out.println("Shortest Distance: " + dist[end]);
+            System.out.print("Path: ");
+            for (int i = 0; i < path.size(); i++) {
+                System.out.print(path.get(i) + (i == path.size() - 1 ? "" : " "));
+            }
+            System.out.println();
+        }
+    }
+}
